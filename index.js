@@ -1,59 +1,112 @@
-import mergeSort from './merge';
+import mergeSort from './merge.js';
+import levelOrder from './breadth.js';
+
+const sample = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 function NewNode(data, left, right) {
   return { data, left: left || null, right: right || null };
 }
 
 function TreeFactory(arr) {
-  return (root = buildTree(arr));
-}
+  // sort and unique-ify the array before doing anything
+  let sortedArr = removeDuplicates(mergeSort(arr));
 
-function buildTree(arr) {
-  // sort the array
-  let sortedArr = mergeSort(arr);
+  const treeRoot = buildTree(sortedArr, 0, sortedArr.length - 1);
 
-  let root = null;
+  function buildTree(array, start, end) {
+    // account for fractions
+    let middle = Math.floor((start + end) / 2);
+    let root = NewNode(array[middle]);
+    // if we've moved past the end of the array, point to nothing
+    if (start > end) return null;
+    root.left = buildTree(array, start, middle - 1);
+    root.right = buildTree(array, middle + 1, end);
 
-  sortedArr.forEach((value) => {
-    // make a new node with the value
-    const newNode = treeNode(value);
-    console.log(newNode);
-    // make a "pointer" index/currentNode to track location within the tree
-    // start at beginning of the tree
-    // this is just a reference... not updating the values.
-    let currentNode = tree[0];
-    // if no root value, make newNode the root;
-    if (!currentNode) {
-      tree.push(newNode);
-      console.log(currentNode);
-      console.table(tree);
+    return root;
+  }
+
+  // breadth-first traversal function, takes a binary tree as input
+  // could just take the root node of a tree as input...
+  function levelOrder(fn) {
+    // make a queue
+    const _queue = {
+      discoveredNodes: [],
+      empty: function () {
+        if (this.discoveredNodes[0] === undefined) return true;
+        else return false;
+      },
+    };
+    // initialize array if no fn
+    if (!fn) {
+      let result = [];
     }
-    // compare newNode.value with tree[index]
-    // if greater or equal
-    // if right === null
-    // set right to new node, push newNode to currentNode.right
-    // else if right
-    // move pointer index to current.right
-    // go to line 6
-    // else (value is less than)
-    // if left === null
-    // set left to new node
-    // else if left
-    // move currentNode to current.left
-    // go to line 6
-  });
-  return root;
+
+    // push the root node onto the tree
+    _queue.discoveredNodes.push(treeRoot);
+
+    // repeat until queue is empty
+    while (!_queue.empty()) {
+      // remove the front of the queue (dequeue the task)
+      let current = _queue.discoveredNodes.shift();
+      // check for left/right children
+      if (current.leftNode !== null) {
+        _enqueue(current.leftNode);
+      }
+      if (current.rightNode !== null) {
+        _enqueue(current.rightNode);
+      }
+      if (fn) {
+        fn(current);
+        return result;
+      } else {
+        _visit(current);
+      }
+    }
+
+    // enqueue
+    function _enqueue(node) {
+      _queue.discoveredNodes.push(node);
+    }
+
+    // dequeue
+    function _visit(node) {
+      console.log(node);
+    }
+  }
+
+  // double
+  function double(val) {
+    return val * 2;
+  }
+
+  function prettyPrint(node, prefix = '', isLeft = true) {
+    if (node === null) {
+      return;
+    }
+    if (node.right !== null) {
+      prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
+    }
+    console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
+    if (node.left !== null) {
+      prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
+    }
+  }
+
+  // implement a function rather than using JS methods?
+  // Could just use [...new Set(arr)]
+  function removeDuplicates(arr) {
+    return [...new Set(arr)];
+  }
+
+  // sample function
+  return {
+    buildTree,
+    levelOrder,
+    prettyPrint,
+    treeRoot,
+    double,
+  };
 }
 
-const prettyPrint = (node, prefix = '', isLeft = true) => {
-  if (node === null) {
-    return;
-  }
-  if (node.right !== null) {
-    prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
-  }
-  console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
-  if (node.left !== null) {
-    prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
-  }
-};
+const tree = TreeFactory(sample);
+tree.prettyPrint(tree.treeRoot);

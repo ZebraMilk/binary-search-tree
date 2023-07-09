@@ -8,10 +8,8 @@ export default function mergeSort(arr) {
   // sort the right half
   let right = mergeSort(arr.slice(arr.length / 2));
   // merge the halves together
-  let merged = _merge(left, right);
-
-  // necessarily mutate the array to remove duplicates
-  merged = removeDuplicates(merged);
+  let merged = [];
+  _merge(left, right);
 
   function _merge(left, right) {
     // while there are elements in each array
@@ -33,11 +31,4 @@ export default function mergeSort(arr) {
   }
   // return merged array
   return merged;
-}
-
-// implement a function rather than using JS methods?
-// Could just use [...new Set[arr]]
-function removeDuplicates(arr) {
-  // Sets are newish
-  return [...new Set[arr]()];
 }
