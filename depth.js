@@ -6,40 +6,36 @@ function preOrder(root, fn) {
   // root
   if (fn) fn(root);
   // left subtree
-  if (fn)
-    if (root.leftNode !== null) {
-      preOrder(tree[root.leftNode]);
-    }
+  if (root.leftNode !== null) {
+    preOrder(root.leftNode);
+  }
   // right subtree
   if (root.rightNode !== null) {
-    preOrder(tree[root.rightNode]);
+    preOrder(root.rightNode);
   }
 }
 
 function inOrder(root, fn) {
   // left subtree
   if (root.leftNode !== null) {
-    inOrder(tree[root.leftNode]);
+    inOrder(root.leftNode);
   }
   // root
   result.push(root.value);
   // right subtree
   if (root.rightNode !== null) {
-    inOrder(tree[root.rightNode]);
+    inOrder(root.rightNode);
   }
 }
-
-inOrder(tree[0]);
-console.log(result.join(' '));
 
 function postOrder(root, fn) {
   // left subtree
   if (root.leftNode !== null) {
-    postOrder(tree[root.leftNode]);
+    postOrder(root.leftNode);
   }
   // right subtree
   if (root.rightNode !== null) {
-    postOrder(tree[root.rightNode]);
+    postOrder(root.rightNode);
   }
   // root
   result.push(root.value);

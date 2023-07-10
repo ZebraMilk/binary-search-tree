@@ -1,5 +1,4 @@
-import mergeSort from './merge.js';
-import levelOrder from './breadth.js';
+import _mergeSort from './merge.js';
 
 const sample = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -9,7 +8,8 @@ function NewNode(data, left, right) {
 
 function TreeFactory(arr) {
   // sort and unique-ify the array before doing anything
-  let sortedArr = removeDuplicates(mergeSort(arr));
+  let sortedArr = _removeDuplicates(_mergeSort(arr));
+  // let sortedArr = _removeDuplicates(arr.sort((a, b) => a - b));
 
   const treeRoot = buildTree(sortedArr, 0, sortedArr.length - 1);
 
@@ -25,60 +25,27 @@ function TreeFactory(arr) {
     return root;
   }
 
-  // breadth-first traversal function, takes a binary tree as input
-  // could just take the root node of a tree as input...
-  function levelOrder(fn) {
-    // make a queue
-    const _queue = {
-      discoveredNodes: [],
-      empty: function () {
-        if (this.discoveredNodes[0] === undefined) return true;
-        else return false;
-      },
-    };
-    // initialize array if no fn
-    if (!fn) {
-      let result = [];
+  // breadth-first traversal, takes a root or the treeRoot first
+  // can make it recursive by passing the queue as a parameter?
+  // or give access to private _queue and _result arrays
+  function levelOrder(root = treeRoot, queue = [], result = [], fn) {
+    if (fn) {
+      // if callback provided, do it
+      root = fn(root);
     }
+    // visit the root node's value
+    result.push(root.data);
 
-    // push the root node onto the tree
-    _queue.discoveredNodes.push(treeRoot);
+    // discover children of root if they exist
+    if (root.left) queue.push(root.left);
+    if (root.right) queue.push(root.right);
+    while (queue.length) levelOrder(queue.shift(), queue, result);
 
-    // repeat until queue is empty
-    while (!_queue.empty()) {
-      // remove the front of the queue (dequeue the task)
-      let current = _queue.discoveredNodes.shift();
-      // check for left/right children
-      if (current.leftNode !== null) {
-        _enqueue(current.leftNode);
-      }
-      if (current.rightNode !== null) {
-        _enqueue(current.rightNode);
-      }
-      if (fn) {
-        fn(current);
-        return result;
-      } else {
-        _visit(current);
-      }
-    }
-
-    // enqueue
-    function _enqueue(node) {
-      _queue.discoveredNodes.push(node);
-    }
-
-    // dequeue
-    function _visit(node) {
-      console.log(node);
-    }
+    // exit and return the resulting array
+    return result;
   }
 
-  // double
-  function double(val) {
-    return val * 2;
-  }
-
+  // Look at this gorgeous function with ternary recursive parameters
   function prettyPrint(node, prefix = '', isLeft = true) {
     if (node === null) {
       return;
@@ -92,13 +59,18 @@ function TreeFactory(arr) {
     }
   }
 
+  // double, test function
+  function double(val) {
+    return val * 2;
+  }
+  /* Private Methods */
+
   // implement a function rather than using JS methods?
   // Could just use [...new Set(arr)]
-  function removeDuplicates(arr) {
+  function _removeDuplicates(arr) {
     return [...new Set(arr)];
   }
 
-  // sample function
   return {
     buildTree,
     levelOrder,
@@ -108,5 +80,9 @@ function TreeFactory(arr) {
   };
 }
 
+// works for passing in a sample
 const tree = TreeFactory(sample);
 tree.prettyPrint(tree.treeRoot);
+const newTree = TreeFactory(tree.levelOrder(tree.double));
+newTree.prettyPrint(newTree.treeRoot);
+// console.log(tree.levelOrder());

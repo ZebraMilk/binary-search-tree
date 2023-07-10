@@ -44,6 +44,12 @@ level of a node = count of edges from root to node, root level = 0
 
 Should the insert/delete/find/height/depth/isBalanced/rebalance functions be methods of the Tree Factory? or separate global methods available to the other functions?
 
+## Brainstorm
+
+The 4 traversal functions need to take the root of a tree and return an array in the new traversal order.
+
+If provided a callback function, they should also perform that callback on each node before inserting into the resulting array
+
 ## Order of Operations
 
 I think I need to determine the height of a node before determining if it is balanced
