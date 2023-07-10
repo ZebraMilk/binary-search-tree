@@ -1,5 +1,3 @@
-import _mergeSort from './merge.js';
-
 const sample = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 function NewNode(data, left, right) {
@@ -8,7 +6,6 @@ function NewNode(data, left, right) {
 
 function TreeFactory(arr) {
   // sort and unique-ify the array before doing anything
-  // let sortedArr = _removeDuplicates(_mergeSort(arr));
   let sortedArr = _removeDuplicates(arr.sort((a, b) => a - b));
 
   const treeRoot = buildTree(sortedArr, 0, sortedArr.length - 1);
@@ -59,6 +56,23 @@ function TreeFactory(arr) {
     }
   }
 
+  function preOrder(fn, root = treeRoot, result = []) {
+    if (fn) {
+      root.data = fn(root.data);
+    }
+    // left subtree
+    if (root.left !== null) {
+      preOrder(fn, root.left, result);
+    }
+    // right subtree
+    if (root.right !== null) {
+      preOrder(fn, root.right, result);
+    }
+    result.push(root.data);
+    // return result only if traversed back up the tree
+    if (root === treeRoot) return result;
+  }
+
   // Look at this gorgeous function with ternary recursive parameters
   function prettyPrint(node, prefix = '', isLeft = true) {
     if (node === null) {
@@ -88,6 +102,7 @@ function TreeFactory(arr) {
   return {
     buildTree,
     levelOrder,
+    preOrder,
     prettyPrint,
     treeRoot,
     double,
@@ -97,8 +112,11 @@ function TreeFactory(arr) {
 // works for passing in a sample
 const tree = TreeFactory(sample);
 tree.prettyPrint(tree.treeRoot);
-console.log(tree.levelOrder());
-console.log(tree.levelOrder(tree.double));
+// console.log(tree.levelOrder());
+// console.log(tree.levelOrder(tree.double));
+
+console.log(tree.preOrder());
+console.log(tree.preOrder(tree.double));
 // const newTree = TreeFactory(tree.levelOrder(tree.double));
 // newTree.prettyPrint(newTree.treeRoot);
 // console.log(tree.levelOrder());
