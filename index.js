@@ -8,8 +8,8 @@ function NewNode(data, left, right) {
 
 function TreeFactory(arr) {
   // sort and unique-ify the array before doing anything
-  let sortedArr = _removeDuplicates(_mergeSort(arr));
-  // let sortedArr = _removeDuplicates(arr.sort((a, b) => a - b));
+  // let sortedArr = _removeDuplicates(_mergeSort(arr));
+  let sortedArr = _removeDuplicates(arr.sort((a, b) => a - b));
 
   const treeRoot = buildTree(sortedArr, 0, sortedArr.length - 1);
 
@@ -25,24 +25,38 @@ function TreeFactory(arr) {
     return root;
   }
 
-  // breadth-first traversal, takes a root or the treeRoot first
-  // can make it recursive by passing the queue as a parameter?
-  // or give access to private _queue and _result arrays
-  function levelOrder(root = treeRoot, queue = [], result = [], fn) {
-    if (fn) {
-      // if callback provided, do it
-      root = fn(root);
+  // breadth-first traversal
+  function levelOrder(fn) {
+    let queue = [];
+    let result = [];
+
+    // push the root node onto the tree
+    queue.push(treeRoot);
+
+    // repeat until queue is empty
+    while (queue.length) {
+      // take a node from the front of the queue
+      let current = queue.shift();
+      // check for left/right children
+      if (current.left !== null) {
+        queue.push(current.left);
+      }
+      if (current.right !== null) {
+        queue.push(current.right);
+      }
+      _visit(current);
     }
-    // visit the root node's value
-    result.push(root.data);
 
-    // discover children of root if they exist
-    if (root.left) queue.push(root.left);
-    if (root.right) queue.push(root.right);
-    while (queue.length) levelOrder(queue.shift(), queue, result);
-
-    // exit and return the resulting array
     return result;
+
+    // dequeue
+    function _visit(node) {
+      if (fn) {
+        // do the thing if there's a thing to do
+        node.data = fn(node.data);
+      }
+      result.push(node.data);
+    }
   }
 
   // Look at this gorgeous function with ternary recursive parameters
@@ -83,6 +97,8 @@ function TreeFactory(arr) {
 // works for passing in a sample
 const tree = TreeFactory(sample);
 tree.prettyPrint(tree.treeRoot);
-const newTree = TreeFactory(tree.levelOrder(tree.double));
-newTree.prettyPrint(newTree.treeRoot);
+console.log(tree.levelOrder());
+console.log(tree.levelOrder(tree.double));
+// const newTree = TreeFactory(tree.levelOrder(tree.double));
+// newTree.prettyPrint(newTree.treeRoot);
 // console.log(tree.levelOrder());

@@ -48,7 +48,22 @@ Should the insert/delete/find/height/depth/isBalanced/rebalance functions be met
 
 The 4 traversal functions need to take the root of a tree and return an array in the new traversal order.
 
-If provided a callback function, they should also perform that callback on each node before inserting into the resulting array
+If provided a callback function, they should also perform that callback on each node before inserting into the resulting array...
+
+
+Okay, since the 4 ordering functions are all methods of the tree object made from the sample array, we (me and my duck) can just rely on those other values to kick off the recursion
+
+!! **TODO** Need to refactor the recursion of the levelOrder function back to the beautiful while-loop queueing method. It worked, don't know why I wanted to copy someone else's work with a recursion I don't think works here, given the requirements.
+
+Just get the methods working and returning the expected values, then figure it out later.
+
+levelOrder needs to return an array with the order of visited nodes
+
+otherOrders needs to return an array with the order of visited nodes
+
+!! **TODO** getDepth and getHeight need to happen sooner than later?
+
+
 
 ## Order of Operations
 
