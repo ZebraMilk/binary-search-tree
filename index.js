@@ -129,15 +129,23 @@ function TreeFactory(arr) {
     return null;
   }
 
-  function insertNode(value, root = treeRoot, previousNode = treeRoot) {
-    // only check the tree for the node if checking the treeRoot
-    if (root === treeRoot && find(value) !== null) {
-      return null;
+  function insertNode(value, root = treeRoot) {
+    // preserve the structure of the tree
+    // only add a node to a leaf
+    if (root.left === null && root.right === null) {
+      if (value > root.data) {
+        return (root.right = NewNode(value));
+      } else {
+        return (root.left = NewNode(value));
+      }
     }
-    // fix this
-    if (root === null) return null;
-
-    // compare root.value, previousNode.value
+    if (value < root.value) {
+      if (root.left !== null) {
+        insertNode(value, root.left);
+      }
+    } else if (root.right !== null) {
+      insertNode(value, root.right);
+    }
   }
 
   function deleteNode(value) {
@@ -231,6 +239,8 @@ function TreeFactory(arr) {
 // works for passing in a sample
 const tree = TreeFactory(sample);
 tree.prettyPrint(tree.treeRoot);
+tree.insertNode(8.5);
+tree.prettyPrint(tree.treeRoot);
 
 // console.log(tree.levelOrder());
 // console.log(tree.levelOrder(tree.testFn));
@@ -252,10 +262,10 @@ tree.prettyPrint(tree.treeRoot);
 // console.log(tree.height(8));
 // console.log(tree.height(4));
 
-let newSample = createSimpleSample(1000);
-const newTree = TreeFactory(newSample);
+// let newSample = createSimpleSample(1000);
+// const newTree = TreeFactory(newSample);
 
-newTree.prettyPrint(newTree.treeRoot);
+// newTree.prettyPrint(newTree.treeRoot);
 // console.log(newTree.find(550));
 
 // console.log(newTree.height(5));
