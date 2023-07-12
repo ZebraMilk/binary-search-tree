@@ -1,5 +1,21 @@
 const sample = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
+function createSampleSet(elements, maxValue) {
+  // populate a Set with up to maxValue elements
+  // random number generator, sorta
+  let arr = [];
+  let sampleSet = new Set([...arr]);
+  return sampleSet;
+}
+
+function createSimpleSample(maxValue) {
+  let simpleSample = [];
+  for (let i = 0; i < maxValue; i++) {
+    simpleSample[i] = i + 1;
+  }
+  return simpleSample;
+}
+
 function NewNode(data, left, right) {
   return { data, left: left || null, right: right || null };
 }
@@ -8,6 +24,7 @@ function TreeFactory(arr) {
   // sort and unique-ify the array before doing anything
   let sortedArr = _removeDuplicates(arr.sort((a, b) => a - b));
 
+  // make the tree!
   const treeRoot = buildTree(sortedArr, 0, sortedArr.length - 1);
 
   function buildTree(array, start, end) {
@@ -41,25 +58,29 @@ function TreeFactory(arr) {
       if (current.right !== null) {
         queue.push(current.right);
       }
-      _visit(current);
+      fn ? result.push(fn(current.data)) : result.push(current.data);
     }
-
     return result;
-
-    // dequeue
-    function _visit(node) {
-      if (fn) {
-        // do the thing if there's a thing to do
-        node.data = fn(node.data);
-      }
-      result.push(node.data);
-    }
   }
 
   function preOrder(fn, root = treeRoot, result = []) {
-    if (fn) {
-      root.data = fn(root.data);
+    // left subtree
+    if (root.left !== null) {
+      preOrder(fn, root.left, result);
     }
+    // root
+    fn ? result.push(fn(root.data)) : result.push(root.data);
+    // right subtree
+    if (root.right !== null) {
+      preOrder(fn, root.right, result);
+    }
+    // return result only if traversed back up the tree
+    if (root === treeRoot) return result;
+  }
+
+  function inOrder(fn, root = treeRoot, result = []) {
+    // root
+    fn ? result.push(fn(root.data)) : result.push(root.data);
     // left subtree
     if (root.left !== null) {
       preOrder(fn, root.left, result);
@@ -68,12 +89,27 @@ function TreeFactory(arr) {
     if (root.right !== null) {
       preOrder(fn, root.right, result);
     }
-    result.push(root.data);
     // return result only if traversed back up the tree
     if (root === treeRoot) return result;
   }
 
-  // Look at this gorgeous function with ternary recursive parameters
+  function postOrder(fn, root = treeRoot, result = []) {
+    // left subtree
+    if (root.left !== null) {
+      preOrder(fn, root.left, result);
+    }
+    // right subtree
+    if (root.right !== null) {
+      preOrder(fn, root.right, result);
+    }
+    // root
+    fn ? result.push(fn(root.data)) : result.push(root.data);
+    // return result only if traversed back up the tree
+    if (root === treeRoot) return result;
+  }
+
+  // Look at this gorgeous function with ternary recursive arguments
+  // Thanks, TOP :)
   function prettyPrint(node, prefix = '', isLeft = true) {
     if (node === null) {
       return;
@@ -87,10 +123,68 @@ function TreeFactory(arr) {
     }
   }
 
-  // double, test function
-  function double(val) {
+  // test function for *Order functions
+  function testFn(val) {
+    // double
     return val * 2;
   }
+
+  function find(value, root = treeRoot) {
+    if (root.data === value) {
+      // returns the node when found
+      return root;
+    }
+    // search left subtree
+    if (root.data > value && root.left) {
+      return find(value, root.left);
+    } // search right subtree
+    else if (root.data < value && root.right) {
+      return find(value, root.right);
+    }
+    console.log('Value not in Tree.');
+    return null;
+  }
+
+  function insertNode(value) {
+    return newRoot;
+  }
+
+  function deleteNode(value) {
+    // if leaf node
+
+    // if 1 child
+
+    // if 2 children
+    return newRoot;
+  }
+
+  function depth(value, root = treeRoot, nodeDepth = 0) {
+    // traverse from root to node with given value
+    if (root.data === value) {
+      return nodeDepth;
+    }
+    nodeDepth++;
+    if (root.data > value && root.left) {
+      // look in left subtree
+      return depth(value, root.left, nodeDepth);
+    } else if (root.data < value && root.right) {
+      // look in right subtree
+      return depth(value, root.right, nodeDepth);
+    }
+    return nodeDepth;
+  }
+
+  function height(value, root = treeRoot, nodeHeight = 0) {
+    if (root.data === value) {
+      // search left subtree for a leaf node
+
+      // search right subtree for a leaf node
+      console.log('still working...');
+    }
+    //
+    return nodeHeight;
+  }
+
   /* Private Methods */
 
   // implement a function rather than using JS methods?
@@ -103,20 +197,37 @@ function TreeFactory(arr) {
     buildTree,
     levelOrder,
     preOrder,
+    inOrder,
+    postOrder,
+    find,
+    depth,
     prettyPrint,
     treeRoot,
-    double,
+    testFn,
   };
 }
 
 // works for passing in a sample
 const tree = TreeFactory(sample);
 tree.prettyPrint(tree.treeRoot);
-// console.log(tree.levelOrder());
-// console.log(tree.levelOrder(tree.double));
 
-console.log(tree.preOrder());
-console.log(tree.preOrder(tree.double));
-// const newTree = TreeFactory(tree.levelOrder(tree.double));
-// newTree.prettyPrint(newTree.treeRoot);
 // console.log(tree.levelOrder());
+// console.log(tree.levelOrder(tree.testFn));
+
+// console.log(tree.preOrder());
+// console.log(tree.preOrder(tree.testFn));
+
+// console.log(tree.find(5));
+// console.log(tree.find(8));
+// console.log(tree.find(3));
+// console.log(tree.find(100));
+
+console.log(tree.depth(5));
+console.log(tree.depth(1));
+console.log(tree.depth(4));
+
+// let newSample = createSimpleSample(1000);
+// const newTree = TreeFactory(newSample);
+
+// newTree.prettyPrint(newTree.treeRoot);
+// console.log(newTree.find(550));

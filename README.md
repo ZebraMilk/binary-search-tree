@@ -23,8 +23,8 @@ each node has properties like height and depth.
 depth = length of the path traversed to arrive at a node
 
 height
-  of a node = length of the longest path from the node to a leaf node
-  of a tree = length of the longest path from the root node to a leaf node
+  of a node = length from the node to the deepest leaf node
+  of a tree = length from the root node to the deepest leaf node
 
 degree of a node = total count of the subtrees attached to the node. leaf nodes are degree = 0
 
@@ -53,17 +53,53 @@ If provided a callback function, they should also perform that callback on each 
 
 Okay, since the 4 ordering functions are all methods of the tree object made from the sample array, we (me and my duck) can just rely on those other values to kick off the recursion
 
-!! **TODO** Need to refactor the recursion of the levelOrder function back to the beautiful while-loop queueing method. It worked, don't know why I wanted to copy someone else's work with a recursion I don't think works here, given the requirements.
+DONE: Need to refactor the recursion of the levelOrder function back to the beautiful while-loop queueing method. It worked, don't know why I wanted to copy someone else's work with a recursion I don't think works here, given the requirements.
 
 Just get the methods working and returning the expected values, then figure it out later.
 
 levelOrder needs to return an array with the order of visited nodes
-
 otherOrders needs to return an array with the order of visited nodes
+
+Gotem
 
 !! **TODO** getDepth and getHeight need to happen sooner than later?
 
 
+### Height, depth, balance, rebalance
+
+Need to figure out how to insert and delete nodes.
+
+#### depth
+
+accepts a node, not a value... but the values of each node in the tree are unique?
+check for value or check for node?
+
+calculate how many edges traveled to arrive at the node with the given value
+
+depth = 0 or depth
+search the root
+  if root.value = value
+  return depth
+depth++
+search the left subtree
+search the right subtree
+return null if value not found
+
+#### height
+
+calculate the shortest distance from the node (with given value) from a leaf node (left and right are null)
+
+
+
+#### insert
+
+#### delete
+
+#### isBalanced
+
+relies on height
+
+#### reBalance
 
 ## Order of Operations
 
@@ -125,10 +161,12 @@ so n elements in the array, the nth element has left child at index 2n and right
 4.left is 1 \* 2 = arr[2] = 2
 4.right is (1 \* 2) + 1 = arr[3] = 6
 
-then 2.left is 2*2 = arr[4] = 1
-2.right is 2*2 + 1 = arr[5] = 3
+then 2.left is 2 * 2 = arr[4] = 1
+2.right is 2 * 2 + 1 = arr[5] = 3
 
 ahhhhh okay...
+
+!! have to be careful not to mutate the array, just push the return of the function on the node.value into the result array, fixed it.
 
 ---
 
