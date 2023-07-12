@@ -22,8 +22,13 @@ function NewNode(data, left, right) {
 
 function TreeFactory(arr) {
   // sort and unique-ify the array before doing anything
-  let sortedArr = _removeDuplicates(arr.sort((a, b) => a - b));
+  let sortedArr = [...new Set(arr)].sort((a, b) => a - b);
 
+  // // implement a function rather than using JS methods?
+  // // Could just use [...new Set(arr)]
+  // function _removeDuplicates(arr) {
+  //   return [...new Set(arr)];
+  // }
   // make the tree!
   const treeRoot = buildTree(sortedArr, 0, sortedArr.length - 1);
 
@@ -108,27 +113,6 @@ function TreeFactory(arr) {
     if (root === treeRoot) return result;
   }
 
-  // Look at this gorgeous function with ternary recursive arguments
-  // Thanks, TOP :)
-  function prettyPrint(node, prefix = '', isLeft = true) {
-    if (node === null) {
-      return;
-    }
-    if (node.right !== null) {
-      prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
-    }
-    console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
-    if (node.left !== null) {
-      prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
-    }
-  }
-
-  // test function for *Order functions
-  function testFn(val) {
-    // double
-    return val * 2;
-  }
-
   function find(value, root = treeRoot) {
     if (root.data === value) {
       // returns the node when found
@@ -145,8 +129,15 @@ function TreeFactory(arr) {
     return null;
   }
 
-  function insertNode(value) {
-    return newRoot;
+  function insertNode(value, root = treeRoot, previousNode = treeRoot) {
+    // only check the tree for the node if checking the treeRoot
+    if (root === treeRoot && find(value) !== null) {
+      return null;
+    }
+    // fix this
+    if (root === null) return null;
+
+    // compare root.value, previousNode.value
   }
 
   function deleteNode(value) {
@@ -174,23 +165,51 @@ function TreeFactory(arr) {
     return nodeDepth;
   }
 
-  function height(value, root = treeRoot, nodeHeight = 0) {
-    if (root.data === value) {
-      // search left subtree for a leaf node
-
-      // search right subtree for a leaf node
-      console.log('still working...');
+  // pass in the node, not the value of the node
+  function height(root = value) {
+    // convert initial value into the node if it exists
+    if (typeof root === 'number') {
+      root = find(root);
     }
-    //
-    return nodeHeight;
+    if (root === null) {
+      return 0;
+    }
+    let leftHeight = -1;
+    let rightHeight = -1;
+    // only start doing stuff if node is found
+    if (root.left !== null) {
+      // get height of the left subtree
+      leftHeight = height(root.left);
+    }
+    if (root.right !== null) {
+      // get height of the right subtree
+      rightHeight = height(root.right);
+    }
+    // if root has no children, return the greater height
+    return (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
   }
 
-  /* Private Methods */
+  /* Utility Methods */
 
-  // implement a function rather than using JS methods?
-  // Could just use [...new Set(arr)]
-  function _removeDuplicates(arr) {
-    return [...new Set(arr)];
+  // Look at this gorgeous function with ternary recursive arguments
+  // Thanks, TOP :)
+  function prettyPrint(node, prefix = '', isLeft = true) {
+    if (node === null) {
+      return;
+    }
+    if (node.right !== null) {
+      prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
+    }
+    console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
+    if (node.left !== null) {
+      prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
+    }
+  }
+
+  // test function for *Order functions
+  function testFn(val) {
+    // double
+    return val * 2;
   }
 
   return {
@@ -200,7 +219,9 @@ function TreeFactory(arr) {
     inOrder,
     postOrder,
     find,
+    insertNode,
     depth,
+    height,
     prettyPrint,
     treeRoot,
     testFn,
@@ -222,12 +243,22 @@ tree.prettyPrint(tree.treeRoot);
 // console.log(tree.find(3));
 // console.log(tree.find(100));
 
-console.log(tree.depth(5));
-console.log(tree.depth(1));
-console.log(tree.depth(4));
+// console.log(tree.depth(5));
+// console.log(tree.depth(1));
+// console.log(tree.depth(4));
 
-// let newSample = createSimpleSample(1000);
-// const newTree = TreeFactory(newSample);
+// console.log(tree.height(5));
+// console.log(tree.height(1));
+// console.log(tree.height(8));
+// console.log(tree.height(4));
 
-// newTree.prettyPrint(newTree.treeRoot);
+let newSample = createSimpleSample(1000);
+const newTree = TreeFactory(newSample);
+
+newTree.prettyPrint(newTree.treeRoot);
 // console.log(newTree.find(550));
+
+// console.log(newTree.height(5));
+// console.log(newTree.height(1));
+// console.log(newTree.height(8));
+// console.log(newTree.height(500));

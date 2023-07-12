@@ -23,6 +23,7 @@ each node has properties like height and depth.
 depth = length of the path traversed to arrive at a node
 
 height
+per specs, largest number of edges from the node to a leaf node
   of a node = length from the node to the deepest leaf node
   of a tree = length from the root node to the deepest leaf node
 
