@@ -153,39 +153,39 @@ function TreeFactory(arr) {
 
   function deleteNode(value, root = treeRoot, prev = treeRoot) {
     // check if value exists on first pass
-    if ((root = treeRoot && find(value) === null)) {
+    if (root === treeRoot && find(value) === null) {
       console.log('Value not found, nothing deleted.');
       return null;
     }
     // find data matching value
     if (root.data === value) {
       // if leaf node
-      // set left/right of parent to null
       if (root.left === null && root.right === null) {
+        // set child of parent to null
         return root.data < prev.data ? (prev.left = null) : (prev.right = null);
       }
-      // if 1 child
-      // set parent to point to current child
-      if (
-        (root.left !== null || root.right !== null) &&
-        !(root.left && root.right)
-      ) {
-        // TODO: fill it in :)
-        return true;
-      }
       // if 2 children
-      // set the parent to point to child, set child to point to grandchild?
+      else if (root.left !== null && root.right !== null) {
+        // set the parent to point to child, set child to point to grandchild?
+        // prev.next, whichever side points to current, should point to
+        //
+        // (prev.next < )
+      }
+      // else if only 1 child, not 2 or 0
+      else {
+        // set parent to point to current child
+        // TODO: fill it in :)
+        return root.data < prev.data
+          ? (prev.left = root.left)
+          : (prev.right = root.right);
+      }
     }
     // if doesn't match, go down tree further
-    if (value < root.data) {
-      if (root.left !== null) {
-        return deleteNode(value, root.left, root);
-      }
+    if (value < root.data && root.left !== null) {
+      return deleteNode(value, root.left, root);
     }
-    if (value > root.data) {
-      if (root.right !== null) {
-        return deleteNode(value, root.right, root);
-      }
+    if (value > root.data && root.right !== null) {
+      return deleteNode(value, root.right, root);
     }
   }
 
@@ -269,6 +269,7 @@ function TreeFactory(arr) {
     postOrder,
     find,
     insertNode,
+    deleteNode,
     depth,
     height,
     prettyPrint,
@@ -278,7 +279,7 @@ function TreeFactory(arr) {
 }
 
 // works for passing in a sample
-const buildStart = performance.now();
+// const buildStart = performance.now();
 const tree = TreeFactory(sample);
 tree.prettyPrint(tree.treeRoot);
 // console.log(tree.levelOrder());
@@ -299,20 +300,32 @@ tree.prettyPrint(tree.treeRoot);
 // console.log(tree.height(5));
 // console.log(tree.height(1));
 // console.log(tree.height(8));
-tree.insertNode(3.6);
-tree.insertNode(4.6);
-tree.insertNode(10.7);
-tree.insertNode(11.7);
-tree.insertNode(12.7);
-tree.insertNode(13.7);
-tree.insertNode(6.5);
-tree.insertNode(6.7);
-tree.insertNode(6.6);
-tree.insertNode(6.9);
-tree.insertNode(6.8);
-tree.insertNode(14.7);
-tree.insertNode(15.7);
-tree.insertNode(8.3);
+
+/* Insert Nodes */
+
+// tree.insertNode(3.6);
+// tree.insertNode(4.6);
+// tree.insertNode(10.7);
+// tree.insertNode(11.7);
+// tree.insertNode(12.7);
+// tree.insertNode(13.7);
+// tree.insertNode(6.5);
+// tree.insertNode(6.7);
+// tree.insertNode(6.6);
+// tree.insertNode(6.9);
+// tree.insertNode(6.8);
+// tree.insertNode(14.7);
+// tree.insertNode(15.7);
+// tree.insertNode(8.3);
+
+/* Delete Nodes */
+
+// tree.deleteNode(3);
+// tree.deleteNode(3);
+// tree.deleteNode(8);
+// tree.deleteNode(6);
+
+/* Reprint Tree */
 tree.prettyPrint(tree.treeRoot);
 // console.log(tree.preOrder());
 
