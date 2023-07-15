@@ -123,9 +123,28 @@ Okay, if the value is < current
 
 #### delete
 
+if it's a leaf node, just make parent point to null
+
+if 
+
+if 2 children
+
+find the thing in the tree that is the next-biggest
+replace itself with the next biggest node
+
+search the right subtree for a node without a left child (must be the next biggest)
+call it replacement
+then point previous node to replacement
+set replacement children to current's children
+remove replacement
+
+delete should return the node that is deleted?
+
+
 #### isBalanced
 
 relies on height
+if the max height of the left subtree is no more than 1 different from the max height of the right subtree, it's balanced
 
 #### reBalance
 
@@ -149,8 +168,22 @@ Then build the left subtree
 then build the right subtree
 
 ### isBalanced
+>A balanced tree is one where the difference between heights of left subtree and right subtree of every node is not more than 1.
 
-a balanced tree has leaf nodes with <=1 height difference
+to do this recursively, need to check the height of left/right subtree of each node in the tree
+
+could pass a modified height function into the inorder/levelorder traversal functions...
+
+what would it need to check for each node? Height of left and right subtrees
+base case would be to return true,
+if any of those differences > 1 return false;
+
+
+Okay, so there are a few ways to touch every node in the tree
+- use one of the \*Order traversal functions, but pass in a checkHeight function
+- just recursively call isBalanced on each subtree
+
+
 
 ### reBalance
 

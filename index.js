@@ -1,13 +1,6 @@
 const sample = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-function createSampleSet(elements, maxValue) {
-  // populate a Set with up to maxValue elements
-  // random number generator, sorta
-  let arr = [];
-  let sampleSet = new Set([...arr]);
-  return sampleSet;
-}
-
+// make an array of consecutive integers in order from 1 to maxValue
 function createSimpleSample(maxValue) {
   let simpleSample = [];
   for (let i = 0; i < maxValue; i++) {
@@ -16,23 +9,32 @@ function createSimpleSample(maxValue) {
   return simpleSample;
 }
 
+// return an array with maxElements integers between 0 and maxValue
+// works best with a large difference between maxValue and maxElements
+function createSampleSet(maxElements, maxValue) {
+  let arr = [];
+  for (let count = 0; count < maxElements; count++) {
+    // random number generator, sorta
+    arr.push(Math.floor((Math.random() * Math.pow(10, 20)) % maxValue));
+  }
+  let sampleSet = new Set([...arr]);
+  return sampleSet;
+}
+
 function NewNode(data, left, right) {
   return { data, left: left || null, right: right || null };
 }
 
 function TreeFactory(arr) {
-  // sort and unique-ify the array before doing anything
-  let sortedArr = [...new Set(arr)].sort((a, b) => a - b);
+  // sort and unique-ify the array and remove values below 1
+  let sortedArr = [...new Set(arr)]
+    .sort((a, b) => a - b)
+    .filter((num) => num > 0);
 
-  // implement a function rather than using JS methods?
-  // Could just use [...new Set(arr)]
-  // function _removeDuplicates(arr) {
-  //   return [...new Set(arr)];
-  // }
   // make the tree!
-  const treeRoot = buildTree(sortedArr, 0, sortedArr.length - 1);
+  let treeRoot = buildTree(sortedArr);
 
-  function buildTree(array, start, end) {
+  function buildTree(array, start = 0, end = array.length - 1) {
     // account for fractions
     let middle = Math.floor((start + end) / 2);
     let root = NewNode(array[middle]);
@@ -63,6 +65,7 @@ function TreeFactory(arr) {
       if (current.right !== null) {
         queue.push(current.right);
       }
+      // check if callback was provided
       fn ? result.push(fn(current.data)) : result.push(current.data);
     }
     return result;
@@ -153,7 +156,7 @@ function TreeFactory(arr) {
 
   function deleteNode(value, root = treeRoot, prev = treeRoot) {
     // check if value exists on first pass
-    if (root === treeRoot && find(value) === null) {
+    if (root === treeRoot && find(value, root) === null) {
       console.log('Value not found, nothing deleted.');
       return null;
     }
@@ -162,25 +165,40 @@ function TreeFactory(arr) {
       // if leaf node
       if (root.left === null && root.right === null) {
         // set child of parent to null
-        return root.data < prev.data ? (prev.left = null) : (prev.right = null);
+        root.data < prev.data ? (prev.left = null) : (prev.right = null);
+        return root;
       }
       // if 2 children
       else if (root.left !== null && root.right !== null) {
-        // set the parent to point to child, set child to point to grandchild?
-        // prev.next, whichever side points to current, should point to
-        //
-        // (prev.next < )
+        // find the next biggest node in the right subtree
+        let current = root.right;
+        while (current.left !== null) {
+          current = current.left;
+          console.log(current);
+          // once the current node has no left subtree, must be next largest
+        }
+        // change root data
+        let replacement = deleteNode(current.data);
+        root.data = replacement.data;
+        return root;
       }
       // else if only 1 child, not 2 or 0
       else {
+        if (root.left !== null) {
+          root.data < prev.data
+            ? (prev.left = root.left)
+            : (prev.right = root.left);
+          return root;
+        } else if (root.right !== null) {
+          root.data < prev.data
+            ? (prev.left = root.right)
+            : (prev.right = root.right);
+        }
         // set parent to point to current child
-        // TODO: fill it in :)
-        return root.data < prev.data
-          ? (prev.left = root.left)
-          : (prev.right = root.right);
+        return root;
       }
     }
-    // if doesn't match, go down tree further
+    // if doesn't match, move along
     if (value < root.data && root.left !== null) {
       return deleteNode(value, root.left, root);
     }
@@ -205,14 +223,14 @@ function TreeFactory(arr) {
     return nodeDepth;
   }
 
-  // pass in the node, not the value of the node
-  function height(root = value) {
+  // pass in a node, or the value of the node
+  function height(root = treeRoot) {
+    if (root === null) {
+      return 0;
+    }
     // convert initial value into the node if it exists
     if (typeof root === 'number') {
       root = find(root);
-    }
-    if (root === null) {
-      return 0;
     }
     // found the node, initialize heights to -1 (works because +1 to max later)
     let leftHeight = -1;
@@ -231,11 +249,30 @@ function TreeFactory(arr) {
   }
 
   function isBalanced(root = treeRoot) {
-    return true;
+    // callback for traversal, the fn needs a value
+    function _compareHeight(value) {
+      // convert value into a node
+      const currentNode = find(value);
+      // get height of child nodes
+      let lheight = height(currentNode.left);
+      let rheight = height(currentNode.right);
+      if (Math.abs(lheight - rheight) > 1) {
+        return false;
+      }
+      return true;
+    }
+    // get an array populated with whether each visited node is balanced
+    let nodeBalanceArr = inOrder(_compareHeight);
+    // if resulting array contains any false, return false
+    return !nodeBalanceArr.includes(false);
   }
 
-  function reBalance(root = treeRoot) {
-    return root;
+  function reBalance() {
+    // use preOrder traversal to sort values into an array
+    let newArr = preOrder();
+    treeRoot = buildTree(newArr);
+    console.log('Tree has been rebalanced.');
+    return treeRoot;
   }
 
   /* Utility Methods */
@@ -255,12 +292,6 @@ function TreeFactory(arr) {
     }
   }
 
-  // test function for *Order functions
-  function testFn(val) {
-    // double
-    return val * 2;
-  }
-
   return {
     buildTree,
     levelOrder,
@@ -272,78 +303,41 @@ function TreeFactory(arr) {
     deleteNode,
     depth,
     height,
+    isBalanced,
+    reBalance,
     prettyPrint,
     treeRoot,
-    testFn,
   };
 }
 
-// works for passing in a sample
-// const buildStart = performance.now();
-const tree = TreeFactory(sample);
+/* Driver Functions */
+
+// const tree = TreeFactory(sample);
+// const tree = TreeFactory(createSimpleSample(30));
+const tree = TreeFactory(createSampleSet(30, 100));
 tree.prettyPrint(tree.treeRoot);
-// console.log(tree.levelOrder());
-// console.log(tree.levelOrder(tree.testFn));
 
-// console.log(tree.preOrder());
-// console.log(tree.preOrder(tree.testFn));
+console.log(tree.isBalanced());
+console.log(tree.levelOrder());
 
-// console.log(tree.find(5));
-// console.log(tree.find(8));
-// console.log(tree.find(3));
-// console.log(tree.find(100));
+console.log(tree.preOrder());
+console.log(tree.postOrder());
+console.log(tree.inOrder());
 
-// console.log(tree.depth(5));
-// console.log(tree.depth(1));
-// console.log(tree.depth(4));
+tree.insertNode(101);
+tree.insertNode(111);
+tree.insertNode(112);
+tree.insertNode(113);
+tree.insertNode(114);
+tree.insertNode(115);
+tree.insertNode(116);
+tree.insertNode(117);
+tree.insertNode(118);
 
-// console.log(tree.height(5));
-// console.log(tree.height(1));
-// console.log(tree.height(8));
+console.log(tree.isBalanced());
+tree.reBalance();
+console.log(tree.isBalanced());
 
-/* Insert Nodes */
-
-// tree.insertNode(3.6);
-// tree.insertNode(4.6);
-// tree.insertNode(10.7);
-// tree.insertNode(11.7);
-// tree.insertNode(12.7);
-// tree.insertNode(13.7);
-// tree.insertNode(6.5);
-// tree.insertNode(6.7);
-// tree.insertNode(6.6);
-// tree.insertNode(6.9);
-// tree.insertNode(6.8);
-// tree.insertNode(14.7);
-// tree.insertNode(15.7);
-// tree.insertNode(8.3);
-
-/* Delete Nodes */
-
-// tree.deleteNode(3);
-// tree.deleteNode(3);
-// tree.deleteNode(8);
-// tree.deleteNode(6);
-
-/* Reprint Tree */
-tree.prettyPrint(tree.treeRoot);
-// console.log(tree.preOrder());
-
-// console.log(tree.height(8));
-// console.log(tree.height(4));
-
-/*
-New Tree from larger sample
-*/
-
-// let newSample = createSimpleSample(100);
-// const newTree = TreeFactory(newSample);
-
-// newTree.prettyPrint(newTree.treeRoot);
-// console.log(newTree.find(50));
-// console.log(newTree.find(666));
-
-// console.log(newTree.height(5));
-// console.log(newTree.height(1));
-// console.log(newTree.height(8));
-// console.log(newTree.height(500));
+console.log(tree.preOrder());
+console.log(tree.postOrder());
+console.log(tree.inOrder());
