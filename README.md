@@ -11,6 +11,12 @@ modification date: 2023-07-9 13:56:18
 
 Given an unsorted array, form a balanced binary tree from that array and add methods as indicated by the requirements. Use only unique values in the array (or implement a "count" property of each value?)
 
+## Restrictions
+
+The array passed into the buildTree function has to have no values < 0
+
+I could make a more sanitizing array funciton, to sort, remove duplicates, and any values < 1... Also could remove strings?
+
 ## Definitions
 
 Balanced Binary tree fulfills three criteria:
@@ -66,7 +72,7 @@ Gotem
 !! **TODO** getDepth and getHeight need to happen sooner than later?
 
 
-### Height, depth, balance, rebalance
+### Methods
 
 Need to figure out how to insert and delete nodes.
 
@@ -74,6 +80,8 @@ Need to figure out how to insert and delete nodes.
 
 accepts a node, not a value... but the values of each node in the tree are unique?
 check for value or check for node?
+
+convert the value to a node
 
 calculate how many edges traveled to arrive at the node with the given value
 
@@ -89,10 +97,29 @@ return null if value not found
 #### height
 
 calculate the shortest distance from the node (with given value) from a leaf node (left and right are null)
+it's an edge-count, not a node count
+
+
 
 
 
 #### insert
+
+Preserve current structure of the tree
+only add to leaf nodes
+
+go down the tree comparing value to each node visited
+if value > data, go right
+if value < data, go left
+
+Currently, it's only successfully inserting in weird spots. 3.6 and 11 both get inserted correctly.
+
+It seems like the function goes into the first L/R subtree, and then only visits the right subtree until it hits a leaf, and then inserts the node correctly on the leaf, though...
+
+Okay, if the value is < current
+  go left, if left, else go right
+
+
 
 #### delete
 
@@ -101,6 +128,9 @@ calculate the shortest distance from the node (with given value) from a leaf nod
 relies on height
 
 #### reBalance
+
+iterate through the tree and find nodes causing the imbalance?
+or just rebuild the tree from the current array?
 
 ## Order of Operations
 

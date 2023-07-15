@@ -24,8 +24,8 @@ function TreeFactory(arr) {
   // sort and unique-ify the array before doing anything
   let sortedArr = [...new Set(arr)].sort((a, b) => a - b);
 
-  // // implement a function rather than using JS methods?
-  // // Could just use [...new Set(arr)]
+  // implement a function rather than using JS methods?
+  // Could just use [...new Set(arr)]
   // function _removeDuplicates(arr) {
   //   return [...new Set(arr)];
   // }
@@ -125,36 +125,68 @@ function TreeFactory(arr) {
     else if (root.data < value && root.right) {
       return find(value, root.right);
     }
-    console.log('Value not in Tree.');
+    // console.log('Value not in Tree.');
     return null;
   }
 
   function insertNode(value, root = treeRoot) {
     // preserve the structure of the tree
-    // only add a node to a leaf
-    if (root.left === null && root.right === null) {
-      if (value > root.data) {
-        return (root.right = NewNode(value));
-      } else {
-        return (root.left = NewNode(value));
-      }
+    // check if value exists
+    if (root === treeRoot && find(value) !== null) {
+      console.log('Value found, please insert a unique value.');
+      return null;
     }
-    if (value < root.value) {
+    // can insert if no child
+    if (value < root.data) {
       if (root.left !== null) {
-        insertNode(value, root.left);
+        return insertNode(value, root.left);
       }
-    } else if (root.right !== null) {
-      insertNode(value, root.right);
+      return (root.left = NewNode(value));
+    }
+    if (value > root.data) {
+      if (root.right !== null) {
+        return insertNode(value, root.right);
+      }
+      return (root.right = NewNode(value));
     }
   }
 
-  function deleteNode(value) {
-    // if leaf node
-
-    // if 1 child
-
-    // if 2 children
-    return newRoot;
+  function deleteNode(value, root = treeRoot, prev = treeRoot) {
+    // check if value exists on first pass
+    if ((root = treeRoot && find(value) === null)) {
+      console.log('Value not found, nothing deleted.');
+      return null;
+    }
+    // find data matching value
+    if (root.data === value) {
+      // if leaf node
+      // set left/right of parent to null
+      if (root.left === null && root.right === null) {
+        return root.data < prev.data ? (prev.left = null) : (prev.right = null);
+      }
+      // if 1 child
+      // set parent to point to current child
+      if (
+        (root.left !== null || root.right !== null) &&
+        !(root.left && root.right)
+      ) {
+        // TODO: fill it in :)
+        return true;
+      }
+      // if 2 children
+      // set the parent to point to child, set child to point to grandchild?
+    }
+    // if doesn't match, go down tree further
+    if (value < root.data) {
+      if (root.left !== null) {
+        return deleteNode(value, root.left, root);
+      }
+    }
+    if (value > root.data) {
+      if (root.right !== null) {
+        return deleteNode(value, root.right, root);
+      }
+    }
   }
 
   function depth(value, root = treeRoot, nodeDepth = 0) {
@@ -182,9 +214,10 @@ function TreeFactory(arr) {
     if (root === null) {
       return 0;
     }
+    // found the node, initialize heights to -1 (works because +1 to max later)
     let leftHeight = -1;
     let rightHeight = -1;
-    // only start doing stuff if node is found
+    // get height of the left subtree
     if (root.left !== null) {
       // get height of the left subtree
       leftHeight = height(root.left);
@@ -194,7 +227,15 @@ function TreeFactory(arr) {
       rightHeight = height(root.right);
     }
     // if root has no children, return the greater height
-    return (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
+    return leftHeight > rightHeight ? leftHeight + 1 : rightHeight + 1;
+  }
+
+  function isBalanced(root = treeRoot) {
+    return true;
+  }
+
+  function reBalance(root = treeRoot) {
+    return root;
   }
 
   /* Utility Methods */
@@ -237,11 +278,9 @@ function TreeFactory(arr) {
 }
 
 // works for passing in a sample
+const buildStart = performance.now();
 const tree = TreeFactory(sample);
 tree.prettyPrint(tree.treeRoot);
-tree.insertNode(8.5);
-tree.prettyPrint(tree.treeRoot);
-
 // console.log(tree.levelOrder());
 // console.log(tree.levelOrder(tree.testFn));
 
@@ -260,13 +299,36 @@ tree.prettyPrint(tree.treeRoot);
 // console.log(tree.height(5));
 // console.log(tree.height(1));
 // console.log(tree.height(8));
+tree.insertNode(3.6);
+tree.insertNode(4.6);
+tree.insertNode(10.7);
+tree.insertNode(11.7);
+tree.insertNode(12.7);
+tree.insertNode(13.7);
+tree.insertNode(6.5);
+tree.insertNode(6.7);
+tree.insertNode(6.6);
+tree.insertNode(6.9);
+tree.insertNode(6.8);
+tree.insertNode(14.7);
+tree.insertNode(15.7);
+tree.insertNode(8.3);
+tree.prettyPrint(tree.treeRoot);
+// console.log(tree.preOrder());
+
+// console.log(tree.height(8));
 // console.log(tree.height(4));
 
-// let newSample = createSimpleSample(1000);
+/*
+New Tree from larger sample
+*/
+
+// let newSample = createSimpleSample(100);
 // const newTree = TreeFactory(newSample);
 
 // newTree.prettyPrint(newTree.treeRoot);
-// console.log(newTree.find(550));
+// console.log(newTree.find(50));
+// console.log(newTree.find(666));
 
 // console.log(newTree.height(5));
 // console.log(newTree.height(1));
