@@ -1,8 +1,5 @@
 ---
-aliases: 
-tags: 
 creation date: 2023-07-09 13:56
-modification date: 2023-07-9 13:56:18
 ---
 
 # Binary Search Tree
