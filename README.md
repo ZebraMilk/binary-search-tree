@@ -7,15 +7,27 @@ modification date: 2023-07-9 13:56:18
 
 # Binary Search Tree
 
-## Implementation
+## Task
 
-Given an unsorted array, form a balanced binary tree from that array and add methods as indicated by the requirements. Use only unique values in the array (or implement a "count" property of each value?)
+Given an unsorted array, form a balanced binary tree from that array and add methods as indicated by the [requirements](##Requirements).
 
-## Restrictions
+## Goals
 
-The array passed into the buildTree function has to have no values < 0
+As a continued foray into data structures and algorithms, this project fundamentally serves to really poke around with Binary Search Trees. It was really fun to implement fake pointers in Javascript without memory allocation. I have minimal exposure to the C programming language through CS50, so some of the methods were familiar.
 
-I could make a more sanitizing array funciton, to sort, remove duplicates, and any values < 1... Also could remove strings?
+Others, though... like determining height of a node, or deciding when to use recursion in developing the methods of the Tree factory, they proved more challenging. I still want to revisit the `height` method, but I feel like I have traversed Binary Search Trees up and down and back and forth, enough to establish a baseline understanding.
+
+I loved this, my brain enjoyed finding the different base cases for each method. It could be refactored, there are a lot of similar conditional expressions that could be cleaned up.
+
+I have a copy of *Introduction to Algorithms*, and am slowly processing some of the simpler chapters. It's a lot, but again, my brain really enjoys the moments where the subject just clicks, even a little.
+
+---
+
+## Project Restrictions
+
+Earlier commits required inputs without values less than 1, but a simple `.filter()` now sanitizes an array of any integer values.
+
+I still need to restrict input to type Number.
 
 ## Definitions
 
@@ -24,12 +36,11 @@ Balanced Binary tree fulfills three criteria:
 - The left subtree of that node is also balanced.
 - The right subtree of that node is also balanced.
 
-each node has properties like height and depth.
+Each node has properties like height and depth.
 
 depth = length of the path traversed to arrive at a node
 
-height
-per specs, largest number of edges from the node to a leaf node
+height = per specs, largest number of edges from the node to a leaf node
   of a node = length from the node to the deepest leaf node
   of a tree = length from the root node to the deepest leaf node
 
@@ -41,155 +52,15 @@ Parent node = predecessor of this node
 leaf node = node without children 
 level of a node = count of edges from root to node, root level = 0
 
-
-### Tasks
-
-- Sort the array
-  - already implemented
-- Provide sorted array to the buildTree function
-  - return the root node of the tree with all the subsequent nodes populated and balanced
-
-Should the insert/delete/find/height/depth/isBalanced/rebalance functions be methods of the Tree Factory? or separate global methods available to the other functions?
-
-## Brainstorm
-
-The 4 traversal functions need to take the root of a tree and return an array in the new traversal order.
-
-If provided a callback function, they should also perform that callback on each node before inserting into the resulting array...
-
-
-Okay, since the 4 ordering functions are all methods of the tree object made from the sample array, we (me and my duck) can just rely on those other values to kick off the recursion
-
-DONE: Need to refactor the recursion of the levelOrder function back to the beautiful while-loop queueing method. It worked, don't know why I wanted to copy someone else's work with a recursion I don't think works here, given the requirements.
-
-Just get the methods working and returning the expected values, then figure it out later.
-
-levelOrder needs to return an array with the order of visited nodes
-otherOrders needs to return an array with the order of visited nodes
-
-Gotem
-
-!! **TODO** getDepth and getHeight need to happen sooner than later?
-
-
-### Methods
-
-Need to figure out how to insert and delete nodes.
-
-#### depth
-
-accepts a node, not a value... but the values of each node in the tree are unique?
-check for value or check for node?
-
-convert the value to a node
-
-calculate how many edges traveled to arrive at the node with the given value
-
-depth = 0 or depth
-search the root
-  if root.value = value
-  return depth
-depth++
-search the left subtree
-search the right subtree
-return null if value not found
-
-#### height
-
-calculate the shortest distance from the node (with given value) from a leaf node (left and right are null)
-it's an edge-count, not a node count
-
-
-
-
-
-#### insert
-
-Preserve current structure of the tree
-only add to leaf nodes
-
-go down the tree comparing value to each node visited
-if value > data, go right
-if value < data, go left
-
-Currently, it's only successfully inserting in weird spots. 3.6 and 11 both get inserted correctly.
-
-It seems like the function goes into the first L/R subtree, and then only visits the right subtree until it hits a leaf, and then inserts the node correctly on the leaf, though...
-
-Okay, if the value is < current
-  go left, if left, else go right
-
-
-
-#### delete
-
-if it's a leaf node, just make parent point to null
-
-if 
-
-if 2 children
-
-find the thing in the tree that is the next-biggest
-replace itself with the next biggest node
-
-search the right subtree for a node without a left child (must be the next biggest)
-call it replacement
-then point previous node to replacement
-set replacement children to current's children
-remove replacement
-
-delete should return the node that is deleted?
-
-
-#### isBalanced
-
-relies on height
-if the max height of the left subtree is no more than 1 different from the max height of the right subtree, it's balanced
-
-#### reBalance
-
-iterate through the tree and find nodes causing the imbalance?
-or just rebuild the tree from the current array?
-
-## Order of Operations
-
-I think I need to determine the height of a node before determining if it is balanced
-
-### rotateTree
-
-somehow reflect/restructure tree around nodes given new information
+## Methods
 
 ### buildTree
 
-Takes an array as a parameter, sorts the array, and builds a balanced tree from that array.
+Takes an array as a parameter and builds a balanced tree from that array.
 
 Doing this recursively would set the root node to the middle value of the array
 Then build the left subtree
-then build the right subtree
-
-### isBalanced
->A balanced tree is one where the difference between heights of left subtree and right subtree of every node is not more than 1.
-
-to do this recursively, need to check the height of left/right subtree of each node in the tree
-
-could pass a modified height function into the inorder/levelorder traversal functions...
-
-what would it need to check for each node? Height of left and right subtrees
-base case would be to return true,
-if any of those differences > 1 return false;
-
-
-Okay, so there are a few ways to touch every node in the tree
-- use one of the \*Order traversal functions, but pass in a checkHeight function
-- just recursively call isBalanced on each subtree
-
-
-
-### reBalance
-
-this could set a new root node, depending on the height of either tree
-
-### insert/delete
+Then build the right subtree
 
 ### levelOrder(fn)
 
@@ -232,11 +103,74 @@ ahhhhh okay...
 
 !! have to be careful not to mutate the array, just push the return of the function on the node.value into the result array, fixed it.
 
----
+### depth
 
-### Learning
+accepts a node, not a value... but the values of each node in the tree are unique?
+check for value or check for node?
 
-What is a balanced binary tree? Starting at the root node, all the left values are less than, and all the right values are greater than, but that goes for all subtrees as well, ya?
+- convert the value to a node if it's not been recursively passed in as a node
+- calculate how many edges traveled to arrive at the node with the given value
+
+depth = 0 or depth
+search the root
+  if root.value = value
+  return depth
+depth++
+search the left subtree
+search the right subtree
+return null if value not found
+
+### height
+
+Calculate the shortest distance from the node (with given value) to a leaf node (left and right are null)
+It's an edge-count, not a node count.
+
+This one works, but there's a little hackiness that I'd like to resolve in the next project.
+
+### insert
+
+Preserve current structure of the tree
+only add to leaf nodes
+
+go down the tree comparing value to each node visited
+if value > data, go right
+if value < data, go left
+
+Currently, it's only successfully inserting in weird spots. 3.6 and 11 both get inserted correctly.
+
+It seems like the function goes into the first L/R subtree, and then only visits the right subtree until it hits a leaf, and then inserts the node correctly on the leaf, though...
+
+Okay, if the value is < current
+  go left, if left, else go right
+
+### delete
+
+if it's a leaf node, just make parent point to null
+
+if there's one child, make parent point to the current child
+
+if 2 children, it gets fun
+
+find the thing in the tree that is the next-biggest
+replace itself with the next biggest node
+
+search the right subtree for a node without a left child (must be the next biggest)
+call it replacement
+then point previous node to replacement
+set replacement children to current's children
+remove replacement
+
+delete should return the node that is deleted?
+
+### isBalanced
+
+>A balanced tree is one where the difference between heights of left subtree and right subtree of every node is not more than 1.
+
+We've already implemented 4 separate ways to perform a function on each node in the tree. Let's just pick one, and pass a `_compareHeight` method. It will return an array of booleans, and if any of the resulting values are false, the array is not balanced.
+
+### reBalance
+
+Because `insert` and `delete` do not affect the order of the nodes, and maintain the order of nodes, it can rely on any insertions or deletions to still produce a Binary Search Tree. Since there is already a method of collecting the values of a binary search tree `inOrder`, this method can use that ordered array to rebuild the tree from "scratch".
 
 ---
 
@@ -278,11 +212,20 @@ Write a simple driver script that does the following:
 - Confirm that the tree is balanced by calling isBalanced.
 - Print out all elements in level, pre, post, and in order.
 
+---
+
+## Brainstorm
+
+The 4 traversal functions need to take the root of a tree and return an array in the new traversal order.
+
+If provided a callback function, they should also perform that callback on each node before inserting into the resulting array...
 
 
+Okay, since the 4 ordering functions are all methods of the tree object made from the sample array, we (me and my duck) can just rely on those other values to kick off the recursion
 
+DONE: Need to refactor the recursion of the levelOrder function back to the beautiful while-loop queueing method. It worked, don't know why I wanted to copy someone else's work with a recursion I don't think works here, given the requirements.
 
+Just get the methods working and returning the expected values, then figure it out later.
 
-
-
-
+levelOrder needs to return an array with the order of visited nodes
+otherOrders need to return an array with the order of visited nodes
